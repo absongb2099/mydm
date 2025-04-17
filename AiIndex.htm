@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>苗语地名查询</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        #results {
+            margin-top: 20px;
+        }
+        .result-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <h1>苗语地名查询</h1>
+    <input type="text" id="searchInput" placeholder="请输入苗语或汉语地名">
+    <div id="results"></div>
+
+    <script>
+        // 手动添加地名数据
+        const placeNames = [
+        
+//ndeud Xongb:东部方言（贵州省）
+
+"Dongs Renx Hangd Ub  铜仁", 
+"Sot Dox Lieux Ghol  松桃", 
+"Lieux Rongx Banx Ceat  玉屏", 
+"Bleat Ncongd Hangd Lel  思南", 
+"Gheul Liux Zhes Xot  石阡", 
+"Yangs Ub Lieux Njoud  沿河", 
+"Renx Liongd Banx Ghueas  印江", 
+"Ndut Mienx Zhes Lel  德江",
+"Jib Xot Gheul Lel  岑巩", 
+"Dex Gheul Xanb  苗王城", 
+"Renx Ghead Ndeat  梵净山", 
+
+//ndeud Xongb:东部方言（重庆市）
+
+"Gheul Hlongb Bienx Ghueas  秀山", 
+"Ndut Gianb Lious Rangl  酉阳",
+"Dongs Lieux Ghot Ub  彭水", 
+"Renx Hlod Las Ceat  黔江", 
+
+//ndeud Xongb:东部方言（湖北省）
+
+"Renx Nhux Gheul Ghueas  恩施", 
+"Doub Ghueas Zhes Mlel  宣恩",
+"Gheul Hlod Ndut Rax  咸丰", 
+"Banx Nkheab Gheul Ghot  来凤", 
+
+//ndeud Xongb:东部方言（湖南省）
+
+"Dangb Rongx Gheul Biant  张家界", 
+"Nggongd Rongx Zhes Nus  桑植",
+"Ghab Renx Ub Hlienb  武陵山", 
+"Ub Hlienb Jib Mlel  常德", 
+"Jib Soud Jib Houd  吉首", 
+"Ub Xod Las Kheat  永顺",
+"Lieux Xanb Ub Xid  泸溪", 
+"Gheul Rongx Nzhot Ghueas  龙山", 
+"Jib Yox Zhes Mlel  花垣", 
+"Zhes Xanb Bloud Nhol  古丈",
+"Bienx Lieux Jib Zhes  凤凰", 
+"Ndut Ghongx Jib Yal  保靖", 
+"Gheul Poub Gheul Niax  吕洞山", 
+"Jib Zhes  凤凰古城",
+"Hat Ub Bleid Yongx  芙蓉镇", 
+"Minl Jangx Kat Xongb  苗疆长城", 
+"Jib Xot Banx Khad  怀化", 
+"Jib Sob Ub Lel  沅陵",
+"Max Yangl Zhes Hlongb  麻阳", 
+"Lieux Dongs Ub Seat  辰溪", 
+
+//结束
+
+//leix Hmub中部方言（贵州省）
+
+"Kad Linx   凯里", 
+"Nangl Khat   岑巩", 
+"Hxent Ninl   镇远", 
+"Gix Xix   天柱",
+"Fangb Nix  台江", 
+"Qib Jux   施秉", 
+"Bad Jongb  三穗", 
+"Fangb Hxib  榕江",
+"Mab Hab   麻江", 
+"Lix Bix   黎平", 
+"Zangx Xongx  雷山", 
+"Xangx Wangx  锦屏",
+"Gud Ngul   剑河", 
+"Hxib Liongb  黄平", 
+"Yaf Vangl   丹寨", 
+"Gud Meil   从江",
+"Vangx Hmub  苗岭", 
+"Dlib Jangl   西江千户苗寨", 
+"Bob Bil Jul   香炉山", 
+"Diongb Wil  都匀",
+"Bib Jil   三都", 
+"Zangx Wangx  福泉", 
+"Pik Nax   余庆", 
+"Yis Vut   安顺", 
+"Yis Dins   镇宁",
+"Vangx Qib   关岭", 
+"Yis Fangx   兴义", 
+"Yis Hvib   兴仁", 
+"Xangx Jeb   贞丰",
+"Diub Xed   安龙", 
+
+//leix Hmub中部方言（广西壮族自治区）
+
+"Ghab Yens  融水",
+"Gud Nif   三江", 
+"Ghab Hangl  融安", 
+
+//lol Hmongb西部方言（云南省）
+
+"Bangx Deus  文山", 
+
+//台江县苗语地名汇总
+
+//-乡镇街道-
+
+"Zangx Xangx   施洞镇", 
+"Ghab Yif   革一镇", 
+"Ghab Dlongx   老屯乡", 
+"Dlongs Laox   萃文街道",
+"Zangx Jef  台盘乡", 
+"Dangx Ghongd   台拱街道", 
+"Fangs Xed	  方召镇", 
+"Khat Vangx   排羊乡",
+"Nangl Ghongd   南宫镇", 
+
+//-台拱街道-
+
+"ongb hsengb  翁生", 
+"dlas vangg nangl  下桃赖", 
+"dlas vangl ongb  中桃赖",
+"ghab znagx vangl diel  上桃赖", 
+"ongd xed nangl 翁秀南", 
+"ongd xed jes 翁秀交", 
+"yof vangl 桃尧",
+"vangl gongd 梅影", 
+"nangx denx 郎等", 
+"nangl niongl 南浓", 
+"zangx niongl 丈浓",
+"vangl wangs 阳汪", 
+"dangx ghongd 台拱寨", 
+"zangx xed 猫猫坪", 
+"nangl hxit 南市",
+"ghab wul xongx 台雄", 
+"bil dad 白大", 
+"vangx ninx 养你", 
+"hxut liux 秀柳",
+"zangx zod 掌坐", 
+"ongb hsaib bil 翁腮白", 
+"jes hxangd 红阳", 
+"ghab vongl hxangd 小红寨",
+"jes pit 交片", 
+"ongb ghaib 翁归", 
+"ghab mangx 登鲁小寨", 
+"denb lux 登鲁",
+"bil dliak 白下", 
+"zangx dliak 掌下", 
+"ongb dongx hfut 翁董付", 
+"jes mongt 交孟",
+
+//-萃文街道-
+
+"bil yol 白岳", 
+"ghab liaf bax 皆牙把", 
+"zangx vox 掌我", 
+"ongb yol 五寨",
+"zangx vib vangl hlieb 大岩寨", 
+"zangx vib vangl yut 小岩寨", 
+"nangl dongb 南冬", 
+"nangl hlaod 南套",
+"ongb hlaod 长中", 
+"zangx hlaod 水井", 
+"dlongs dangd 松旦", 
+"dlongs laox 南省",
+"bil wangs 白汪", 
+"jes ninx 交碾", 
+"ongb gangb 翁岗", 
+"nangl xongx 南兄",
+"zangx ful 展福", 
+"zangx dongx 掌董", 
+"bok ent 播恩", 
+"dangl xangb 桃香",
+"ghab zangx ninx 方省", 
+"bil langs 白朗", 
+"dax gil 大德", 
+"ghab wul daob yinb 打革坝",
+"ghab nangl gal 石板桥", 
+
+//-老屯乡-
+
+"nangl nix 南你", 
+"ghab hob 皆蒿", 
+"vangb dlib 阳西", 
+"zangx bangb 岑邦",
+"ongb nongl 翁农", 
+"jes diangk 交匠", 
+"nangl diangk 南匠", 
+"zangx dangs 岩寨",
+"ghad hsenk 挂胜", 
+"zangx mais hsenb 棉花坪", 
+"bok xud 报效", 
+"ghab wab 皆洼",
+"zangx fangx 掌访", 
+"zangx vob lax 掌窝那", 
+"diongl bad dliak 同巴下", 
+"vangl ghet laob 阳故捞",
+"ghab hxax 格色", 
+"ghab wangx bod ted 白土", 
+"wangs hfud 望虎屯", 
+"ghab dlongx 榕山",
+"dlib zat 岩脚", 
+"ghab tent 老屯", 
+"gangd niangd 稿仰", 
+"zangx tangb 长滩",
+"vangx sob 养梭", 
+"zangx bis 掌璧", 
+"hfud vongl 富荣", 
+"jes xangx 坝场",
+"vangl tent 阳屯", 
+"bil liuf 排略", 
+"bok ghaox 播稿", 
+"dlib get 鸡蛋寨",
+"ongb ghongb 翁工", 
+"ongb xangt 翁向", 
+
+//- 施洞镇 -
+
+"nangl hxek 南哨", 
+"tent ghaox 屯稿", 
+"hsait hxenb 四新", 
+"vangl dad 旧州",
+"jes jangd 九匠", 
+"zangx mais hsenb 棉花坪", 
+"niangx hfangf 仰方", 
+"khangd langf 良田",
+"ongb pot 黄泡", 
+"jenx hsaod 景孝", 
+"jenx tent 景屯", 
+"dlongs vib jel 碓窝寨",
+"dlongl vob naox 杨家沟", 
+"nangl gangt 八埂", 
+"liux sas 柏梓坪", 
+"liux diangx 芳寨",
+"zangx xangx 施洞", 
+"dangx vongx 塘龙", 
+"vangl dliab 偏寨", 
+"zangx yangl 平洋",
+"zangx nenl 小河", 
+"nangl hvab 巴拉河", 
+"bil xed 猫坡", 
+"vangl ghet lux 阳故鲁",
+"zok mas 芝麻寨", 
+"nangl xos 平兆", 
+"zangx hmangd 猫鼻岭", 
+"vib diel 景洞坳",
+"fangb dlangd 景洞塘", 
+
+//- 革一镇-
+
+"jud sib 旧司", 
+"hek hsaok 后哨", 
+"hek hsaok vangl bil 后哨上寨", 
+"diongb tent 革一屯上",
+"ghab yif 革一大寨", 
+"ghab zangx lix 田坝", 
+"dlongs ghad 梨树坳", 
+"bil hxenb vangx khab 青杠寨",
+"bil hxenb排生", 
+"deix hxenb 台水", 
+"vangx dlix 养洗", 
+"ghab ongd 太平坳",
+"bil hlaot 革一新寨", 
+"ongb xenx 翁醒", 
+"vangl dos 洋桃", 
+"zat dangb 乍当",
+"ongb zok vangl hlieb 江边", 
+"jil nangx lix 小黑寨", 
+"fangb nangx 冷溪", 
+"bil fangs 白方",
+"dlib nangl 西南", 
+"dlongs lix bod 松里播", 
+"dlib zongd 桃树塝", 
+"las des 豆寨",
+"zangx mais hsenb 棉花坪", 
+"wangs fib 汪辉", 
+"vangx dliangx 高大山", 
+"dlongs bangb 沙邦",
+"las hlieb 茅坪", 
+"zangx did 平贾", 
+
+//- 排羊乡-
+
+"nangl hsat 南社", 
+"ghab wul wais 皆屋渊",
+"ongb khab 翁开", 
+"ongb wax 翁瓦", 
+"ongb hsad 翁社", 
+"khat dlias 岩寨",
+"zangx lix 掌里", 
+"dlongs ghab vax 松皆雅", 
+"zangx hlieb 平寨", 
+"zangx ghaib 掌皆",
+"bil zas 白扎", 
+"dlongs ongb 松瓮", 
+"zangx xix 掌喜", 
+"nangl hsaib 白水洞",
+"zangx dex 大塘", 
+"diub tenf 屯上", 
+"vangl lul 台乐", 
+"khat vangs 排羊寨",
+"jex baix 九摆", 
+"bil hsab 白基杉", 
+"nangl daob vangl nangl 南刀下寨", 
+"nangl daob vangl jes 南刀上寨",
+
+//-南宫镇 -
+
+"jes ghongd 交宫", 
+"vangx khaib vangl hvib 黑山寨", 
+"zangx hxenb 掌新", 
+"jit dos 记多",
+"wangs jangs 汪江", 
+"dangx daot 党道", 
+"vangx hvat 养下", 
+"vangl diaf 养甲",
+"bil bangb 白帮", 
+"dlongs ghuab saf 松挂刹", 
+"zangx hlaod 岩板", 
+"ongb dliab 翁渊",
+"ongb mangl 巫芒", 
+"zangx ghaib 松照", 
+"jes hvat 交下", 
+"zangx hongb 掌丰",
+"ongb diel 翁丢", 
+"dlongs ghab wik 松皆玉", 
+"nangl ghongd 南宫", 
+"zangx mif 大田角",
+"zangx ghab ghaib 掌皆归", 
+"zangx bis 掌必", 
+"ongb hvib 翁细", 
+"ongb hseib 翁虽",
+"dlongs gangf 东扛", 
+"vob dluk dab 皆就西", 
+"dlongs nins 东衣", 
+"zangx jit 掌吉",
+"vangx gob 养戈", 
+"dlongs laox 松老", 
+"ongb zangx wus 掌阿", 
+"haod langf 蒿郎",
+"ongb niel 翁牛", 
+"ghab lik 皆利", 
+"jes naf 交纳", 
+"zangx bud 掌包",
+"jes bud 交包", 
+"nangl niel 南牛", 
+"ongb jangf 翁匠", 
+"ongb mif 巫密",
+"ongb vib haib 石灰河", 
+"jes mif 交密", 
+"vangl zat 阳这", 
+"bil bangb 白邦",
+
+//-方召镇 -
+
+"wangs yif 汪一", 
+"vangx hob 养蒿", 
+"jes hlangt 交浪", 
+"dlib ghaf 基甲",
+"vangx ghaf 养甲", 
+"zangx pab 泡木", 
+"fangs xed vangl nangl 待忙", 
+"vangx ghaid 松木寨",
+"fangs xed vangl jes 方召大寨", 
+"ongb ghab lix 黄茅", 
+"vangx ongd juk 覃膏堡", 
+"zangx saof 掌苕",
+"jes wangs vangl bil 交汪上寨", 
+"jes wangs vangl dab 交汪下寨", 
+"hfud dal jes 李子", 
+"ongb diuk nangl 巫脚南",
+"ongb diuk jes 巫脚交", 
+"dlongs pab 松葩", 
+"fangs bil 反排", 
+"ongb dlub 巫梭",
+"xit dais 四登", 
+
+//台江县苗语之山峰、河流
+
+"ongb hniangb 清水江", 
+"ongb hvab 巴拉河", 
+"ongb nix 翁你河",
+"ongb mif 巫密河", 
+"vangx jit 养机坡", 
+"vangx bok tait 养播太", 
+"bok khad hfud 播开吼",
+"vangx niangx 养仰山", 
+"ongb gangb bil 翁岗白", 
+"bok zangx dliak 播掌下", 
+"bil mok 白么坡",
+"ongb ghaib 翁该坡", 
+"vangx nix 养你山", 
+"bok vangx niongl 播养浓", 
+"bok jes pik 交片山",
+"dlongs diongx nongl 仓门坳", 
+"bil jut 白就山", 
+"bil hxeb hnaib 白秀那", 
+"vangx ghab hongl 养嘎宏",
+"ghab diongl bil 皆同白", 
+"bok zangx xix 播展喜", 
+"bil ghab hsaib 白皆腮", 
+"bok vangx wax 播养瓦",
+"ongb bangx jib 翁板鸡", 
+"bok ghox 播果", 
+"vangx enb mal 养恩马", 
+"bok ghab hob 喊天坡",
+"bok ngaf diongl 大安东", 
+"bok jex lux 播九鲁", 
+"bok vangl nangl 播阳南", 
+"vangx enb mal 马鞍山",
+"bil xed 猫坡", 
+"bok zangx hmangd 猫鼻岭", 
+"bok dex niel 铜牛山", 
+"zangx niongx 掌陇坡",
+"bok dlas nins 播沙碾", 
+"vangx mongd 养茂坡", 
+"bok jok hsenb 播九生", 
+"bok ful 播福",
+"ongb ghab mangx 翁皆满", 
+"bok naix hxit 播乃谢", 
+"bil ghob dus nis 白果斗利", 
+"bok jes saix 播交晒",
+"bok zangx hlieb 播长溜", 
+"bok ghet wuf 播固吾", 
+"bok dlaib 黑山", 
+"bok vangx hongb 播养轰",
+"dlongs jex lix 松九里坡", 
+"vangx dliak 养下坡", 
+"dlongs hvet 松亥坡", 
+"jes hxit 交系坡",
+"bok vangx dangk 播养当", 
+"zangx vob diuk 掌阿就", 
+"bok vangx hxuk 播养秀", 
+"zangx saix 掌水平坡",
+"bok nangl daob 播南刀", 
+
+//结束
+
+        ];
+
+        // 搜索结果展示
+        function showResults(matchingPlaces) {
+            const resultsContainer = document.getElementById("results");
+            resultsContainer.innerHTML = "";
+
+            if (matchingPlaces.length === 0) {
+                resultsContainer.innerHTML = "<p>未找到匹配的地名</p>";
+                return;
+            }
+
+            matchingPlaces.forEach(place => {
+                const resultItem = document.createElement("div");
+                resultItem.className = "result-item";
+                resultItem.textContent = place;
+                resultsContainer.appendChild(resultItem);
+            });
+        }
+
+        // 搜索按钮
+        document.getElementById("searchInput").addEventListener("input", function() {
+            const query = this.value.toLowerCase();
+            if (query.length === 0) {
+                showResults([]);
+                return;
+            }
+
+            // 搜索结果
+            const matchingPlaces = placeNames.filter(place => 
+                place.toLowerCase().includes(query)
+            );
+            showResults(matchingPlaces);
+        });
+    </script>
+</body>
+</html>
